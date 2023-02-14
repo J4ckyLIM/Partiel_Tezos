@@ -6,7 +6,6 @@ type parameter =
   AddAdmin of Parameter.add_admin_param
   | RemoveAdmin of Parameter.remove_admin_param
   | AcceptAdmin of Parameter.accept_admin_param
-  | WhitelistCreator of Parameter.add_creator_to_whitelist_param
   | BlacklistCreator of Parameter.add_creator_to_blacklist_param
   | CreateCollection of Parameter.create_collection
   | PayFeesToContract of Parameter.pay_fees_to_contract_param
@@ -55,6 +54,32 @@ let remove_admin(remove_admin_param, store: Parameter.remove_admin_param * Stora
 			in
 		{ store with admin_list }
 
+// CREATOR PART
+let whitelist_creator(whitelist_creator_param, store: Parameter.add_creator_to_whitelist_param * Storage.t) : Storage.t = 
+  let creator_whitelist : Storage.creator_whitelist = 
+    match Map.find_opt whitelist_creator_param store.creator_whitelist with
+      Some _ -> failwith Errors.creator_already_whitelisted
+      | None -> Map.add whitelist_creator_param true store.creator_whitelist
+    in
+  { store with creator_whitelist }
+
+let blacklist_creator(blacklist_creator_param, store: Parameter.add_creator_to_blacklist_param * Storage.t) : Storage.t =
+  let creator_blacklist : Storage.creator_blacklist = 
+    match Map.find_opt blacklist_creator_param store.creator_blacklist with
+      Some _ -> failwith Errors.creator_already_blacklisted
+      | None -> Map.add blacklist_creator_param true store.creator_blacklist
+    in
+  { store with creator_blacklist }
+
+// This allow a creator to become whitelisted
+let pay_fees_to_contract(_pay_fees_to_contract, store : Parameter.pay_fees_to_contract_param * Storage.t) : Storage.t =
+	let amount : tez = Tezos.get_amount() in
+	let sender: address = Tezos.get_sender() in
+	if(amount = 10tez) then
+		whitelist_creator(sender, store)
+	else
+		failwith Errors.wrong_fees_amount
+	store
 
 
 // Main entry point
@@ -70,8 +95,9 @@ let main (action, store : parameter * Storage.t) : operation list * Storage.t =
     | AcceptAdmin param -> 
       let () : unit = assert_admin(Tezos.get_sender(), store) in
       accept_admin param store
-    | WhitelistCreator param -> Storage.whitelist_creator param store
-    | BlacklistCreator param -> Storage.blacklist_creator param store
+    | BlacklistCreator param -> 
+      let () : unit = assert_admin(Tezos.get_sender(), store) in
+      blacklist_creator param store
     | CreateCollection param -> Storage.create_collection param store
     | PayFeesToContract param -> Storage.pay_fees_to_contract param store
   )
