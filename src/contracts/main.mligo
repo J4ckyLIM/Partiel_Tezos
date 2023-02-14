@@ -9,6 +9,7 @@ type parameter =
   | WhitelistCreator of Parameter.add_creator_to_whitelist_param
   | BlacklistCreator of Parameter.add_creator_to_blacklist_param
   | CreateCollection of Parameter.create_collection
+  | PayFeesToContract of Parameter.pay_fees_to_contract_param
 
 let assert_admin (_assert_admin_param, store : Parameter.assert_admin_param * Storage.t) : unit =
   match  Map.find_opt(Tezos.get_sender():address) store.admin_list with
@@ -33,5 +34,6 @@ let main (action, store : parameter * Storage.t) : operation list * Storage.t =
     | WhitelistCreator param -> Storage.whitelist_creator param store
     | BlacklistCreator param -> Storage.blacklist_creator param store
     | CreateCollection param -> Storage.create_collection param store
+    | PayFeesToContract param -> Storage.pay_fees_to_contract param store
   )
 
