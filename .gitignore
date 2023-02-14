@@ -1,0 +1,10 @@
+src/compiled/*
+
+.env
+*.old
+
+.ligo
+.ligo-work
+.ligoproject
+
+/node_modules
