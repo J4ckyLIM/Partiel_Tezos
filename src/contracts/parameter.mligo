@@ -5,5 +5,5 @@ type assert_admin_param = unit
 type add_creator_to_blacklist_param = address
 type add_creator_to_whitelist_param = address
 type assert_creator_whitelisted_param = unit
-type create_collection = address
-type pay_fees_to_contract = unit
+type create_collection_param = address
+type pay_fees_to_contract_param = unit
