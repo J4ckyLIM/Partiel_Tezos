@@ -1,0 +1,6 @@
+let undefined_token = "FA2_TOKEN_UNDEFINED"
+let ins_balance     = "FA2_INSUFFICIENT_BALANCE"
+let no_transfer     = "FA2_TX_DENIED"
+let not_owner       = "FA2_NOT_OWNER"
+let not_operator    = "FA2_NOT_OPERATOR"
+let not_supported   = "FA2_OPERATORS_UNSUPPORTED"
